@@ -24,8 +24,6 @@
   button { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .btn-primary { background: #3D5341; color: #fff; }
   .btn-primary:hover { background: #2e3f31; }
-  .btn-secondary { background: #e8e8e8; color: #555; }
-  .btn-secondary:hover { background: #ddd; }
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #3D5341; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
   .toast.show { opacity: 1; }
   .steps { margin-top: 24px; padding: 16px; background: #f9f9f6; border-radius: 6px; font-size: 13px; color: #666; line-height: 1.7; }
@@ -76,14 +74,12 @@
     <div class="preview-box" id="preview"></div>
     <div class="actions">
       <button class="btn-primary" onclick="copySignature()">Copy Signature</button>
-      <button class="btn-secondary" onclick="downloadHTML()">Download HTML</button>
     </div>
 
     <h2 style="margin-top: 28px;">Reply Signature</h2>
     <div class="preview-box" id="reply-preview"></div>
     <div class="actions">
       <button class="btn-primary" onclick="copyReplySignature()">Copy Reply Signature</button>
-      <button class="btn-secondary" onclick="downloadReplyHTML()">Download HTML</button>
     </div>
   </div>
 </div>
@@ -182,19 +178,6 @@ async function copySignature() {
   }
 }
 
-function downloadHTML() {
-  const html = getSignatureHTML();
-  const name = document.getElementById('name').value || 'Signature';
-  const safeName = name.replace(/\s+/g, '_');
-  const blob = new Blob([html], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `Signature_${safeName}.html`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('HTML file downloaded!');
-}
-
 async function copyReplySignature() {
   const html = getReplySignatureHTML();
   try {
@@ -212,19 +195,6 @@ async function copyReplySignature() {
     sel.removeAllRanges();
     showToast('Reply signature copied to clipboard!');
   }
-}
-
-function downloadReplyHTML() {
-  const html = getReplySignatureHTML();
-  const name = document.getElementById('name').value || 'Signature';
-  const safeName = name.replace(/\s+/g, '_');
-  const blob = new Blob([html], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `Reply_Signature_${safeName}.html`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('Reply HTML file downloaded!');
 }
 
 // Auto-format phone number as user types
