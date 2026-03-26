@@ -55,11 +55,13 @@
     <input type="text" id="title" placeholder="Director of Operations">
 
     <label for="phone">Phone Number</label>
-    <input type="tel" id="phone" placeholder="555.555.5555">
-    <div class="hint">Format: xxx.xxx.xxxx</div>
+    <input type="tel" id="phone" placeholder="5555555555" maxlength="12">
 
     <label for="email">Email</label>
-    <input type="email" id="email" placeholder="jane@seventyhospitality.com">
+    <div style="display: flex; align-items: center; gap: 0;">
+      <input type="text" id="email" placeholder="jane" style="border-radius: 6px 0 0 6px; border-right: none;">
+      <span style="padding: 10px 12px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 0 6px 6px 0; font-size: 14px; color: #888; white-space: nowrap;">@seventyhospitality.com</span>
+    </div>
 
     <div class="steps">
       <strong>How to set up in Outlook:</strong><br>
@@ -91,12 +93,26 @@
 <div class="toast" id="toast">Signature copied to clipboard!</div>
 
 <script>
-function getSignatureHTML() {
+function formatPhone(input) {
+  const digits = input.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return digits.slice(0, 3) + '.' + digits.slice(3);
+  return digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
+}
+
+function getFormValues() {
   const name = document.getElementById('name').value || 'Your Name';
   const title = document.getElementById('title').value || 'Your Title';
-  const phone = document.getElementById('phone').value || '000.000.0000';
-  const email = document.getElementById('email').value || 'you@seventyhospitality.com';
+  const phoneRaw = document.getElementById('phone').value;
+  const phone = phoneRaw ? formatPhone(phoneRaw) : '000.000.0000';
   const phoneDigits = phone.replace(/\D/g, '');
+  const emailPrefix = document.getElementById('email').value || 'you';
+  const email = emailPrefix + '@seventyhospitality.com';
+  return { name, title, phone, phoneDigits, email };
+}
+
+function getSignatureHTML() {
+  const { name, title, phone, phoneDigits, email } = getFormValues();
 
   return `<div style="font-family: 'Times New Roman', Times, serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -130,11 +146,7 @@ function getSignatureHTML() {
 }
 
 function getReplySignatureHTML() {
-  const name = document.getElementById('name').value || 'Your Name';
-  const title = document.getElementById('title').value || 'Your Title';
-  const phone = document.getElementById('phone').value || '000.000.0000';
-  const email = document.getElementById('email').value || 'you@seventyhospitality.com';
-  const phoneDigits = phone.replace(/\D/g, '');
+  const { name, title, phone, phoneDigits, email } = getFormValues();
 
   return `<div style="font-family: 'Times New Roman', Times, serif; font-size: 14px; color: #808080; line-height: 1.4;">
     <span style="font-size: 15px; font-weight: 700; color: #3D5341; white-space: nowrap;">${name}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><span style="white-space: nowrap;">${title}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>
@@ -218,8 +230,18 @@ function downloadReplyHTML() {
   showToast('Reply HTML file downloaded!');
 }
 
+// Auto-format phone number as user types
+document.getElementById('phone').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  const oldLen = this.value.length;
+  this.value = formatPhone(this.value);
+  const newLen = this.value.length;
+  this.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
+  updatePreview();
+});
+
 // Live preview on every keystroke
-document.querySelectorAll('input').forEach(el => el.addEventListener('input', updatePreview));
+document.querySelectorAll('input:not(#phone)').forEach(el => el.addEventListener('input', updatePreview));
 updatePreview();
 </script>
 </body>
