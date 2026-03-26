@@ -30,6 +30,15 @@
   .toast.show { opacity: 1; }
   .steps { margin-top: 24px; padding: 16px; background: #f9f9f6; border-radius: 6px; font-size: 13px; color: #666; line-height: 1.7; }
   .steps strong { color: #3D5341; }
+  @media (max-width: 600px) {
+    body { padding: 24px 12px; }
+    .container { gap: 20px; }
+    .form-panel, .preview-panel { min-width: 0; padding: 20px 16px; }
+    input { font-size: 16px; }
+    .actions { flex-direction: column; }
+    .actions button { width: 100%; }
+    .preview-box { overflow-x: auto; padding: 16px 12px; }
+  }
 </style>
 </head>
 <body>
@@ -128,7 +137,7 @@ function getReplySignatureHTML() {
   const phoneDigits = phone.replace(/\D/g, '');
 
   return `<div style="font-family: 'Times New Roman', Times, serif; font-size: 14px; color: #808080; line-height: 1.4;">
-    <span style="font-size: 15px; font-weight: 700; color: #3D5341;">${name}</span><span style="color: #c8c8c8;">&nbsp; &nbsp;</span>${title}<span style="color: #c8c8c8;">&nbsp; &nbsp;</span><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none;">${phone}</a><span style="color: #c8c8c8;">&nbsp; &nbsp;</span><a href="mailto:${email}" style="color: #808080; text-decoration: none;">${email}</a>
+    <span style="font-size: 15px; font-weight: 700; color: #3D5341; white-space: nowrap;">${name}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><span style="white-space: nowrap;">${title}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>
 </div>`;
 }
 
