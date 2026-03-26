@@ -112,7 +112,7 @@ function getFormValues() {
 function getSignatureHTML() {
   const { name, title, phone, phoneDigits, email } = getFormValues();
 
-  return `<div style="font-family: 'Times New Roman', Times, serif; color: #4a4a4a;">
+  return `<div style="font-family: Tenorite, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
             <td rowspan="3" width="36" style="width: 36px; padding: 0; margin: 0; vertical-align: top;">
@@ -145,7 +145,7 @@ function getSignatureHTML() {
 function getReplySignatureHTML() {
   const { name, title, phone, phoneDigits, email } = getFormValues();
 
-  return `<div style="font-family: 'Times New Roman', Times, serif; font-size: 14px; color: #808080; line-height: 1.4;">
+  return `<div style="font-family: Tenorite, Arial, Helvetica, sans-serif; font-size: 14px; color: #808080; line-height: 1.4;">
     <span style="font-size: 15px; font-weight: 700; color: #3D5341; white-space: nowrap;">${name}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><span style="white-space: nowrap;">${title}</span><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a><span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>
 </div>`;
 }
