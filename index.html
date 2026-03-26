@@ -99,12 +99,12 @@ function formatPhone(input) {
 }
 
 function getFormValues() {
-  const name = document.getElementById('name').value || 'Your Name';
-  const title = document.getElementById('title').value || 'Your Title';
+  const name = document.getElementById('name').value || 'Jane Smith';
+  const title = document.getElementById('title').value || 'Director of Operations';
   const phoneRaw = document.getElementById('phone').value;
-  const phone = phoneRaw ? formatPhone(phoneRaw) : '000.000.0000';
+  const phone = phoneRaw ? formatPhone(phoneRaw) : '555.555.5555';
   const phoneDigits = phone.replace(/\D/g, '');
-  const emailPrefix = document.getElementById('email').value || 'you';
+  const emailPrefix = document.getElementById('email').value || 'jane';
   const email = emailPrefix + '@seventyhospitality.com';
   return { name, title, phone, phoneDigits, email };
 }
