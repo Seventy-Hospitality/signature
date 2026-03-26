@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seventy Hospitality – Signature Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f0; color: #333; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  h1 { font-size: 22px; color: #3D5341; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: #808080; margin-bottom: 32px; }
+  .container { display: flex; gap: 40px; max-width: 1000px; width: 100%; flex-wrap: wrap; }
+  .form-panel, .preview-panel { background: #fff; border-radius: 10px; padding: 28px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .form-panel { flex: 1; min-width: 300px; }
+  .preview-panel { flex: 1.2; min-width: 340px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 16px; }
+  label:first-child { margin-top: 0; }
+  input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; }
+  input:focus { outline: none; border-color: #3D5341; }
+  .hint { font-size: 12px; color: #aaa; margin-top: 2px; }
+  h2 { font-size: 15px; color: #3D5341; margin-bottom: 16px; }
+  .preview-box { border: 1px solid #e8e8e8; border-radius: 6px; padding: 20px; background: #fff; min-height: 120px; }
+  .actions { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+  button { padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: #3D5341; color: #fff; }
+  .btn-primary:hover { background: #2e3f31; }
+  .btn-secondary { background: #e8e8e8; color: #555; }
+  .btn-secondary:hover { background: #ddd; }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #3D5341; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  .steps { margin-top: 24px; padding: 16px; background: #f9f9f6; border-radius: 6px; font-size: 13px; color: #666; line-height: 1.7; }
+  .steps strong { color: #3D5341; }
+</style>
+</head>
+<body>
+
+<h1>Seventy Hospitality</h1>
+<p class="subtitle">Email Signature Generator</p>
+
+<div class="container">
+  <div class="form-panel">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" placeholder="Jane Smith">
+
+    <label for="title">Title</label>
+    <input type="text" id="title" placeholder="Director of Operations">
+
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" placeholder="555.555.5555">
+    <div class="hint">Format: xxx.xxx.xxxx</div>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="jane@seventyhospitality.com">
+
+    <div class="steps">
+      <strong>How to set up in Outlook:</strong><br>
+      1. Click "Copy Signature" above<br>
+      2. Open Outlook → Settings → Signatures<br>
+      3. Create a new signature and paste<br>
+      4. If phone/email gets underlined, remove the underline manually<br>
+      5. Save and you're done!
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <h2>New Message Signature</h2>
+    <div class="preview-box" id="preview"></div>
+    <div class="actions">
+      <button class="btn-primary" onclick="copySignature()">Copy Signature</button>
+      <button class="btn-secondary" onclick="downloadHTML()">Download HTML</button>
+    </div>
+
+    <h2 style="margin-top: 28px;">Reply Signature</h2>
+    <div class="preview-box" id="reply-preview"></div>
+    <div class="actions">
+      <button class="btn-primary" onclick="copyReplySignature()">Copy Reply Signature</button>
+      <button class="btn-secondary" onclick="downloadReplyHTML()">Download HTML</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Signature copied to clipboard!</div>
+
+<script>
+function getSignatureHTML() {
+  const name = document.getElementById('name').value || 'Your Name';
+  const title = document.getElementById('title').value || 'Your Title';
+  const phone = document.getElementById('phone').value || '000.000.0000';
+  const email = document.getElementById('email').value || 'you@seventyhospitality.com';
+  const phoneDigits = phone.replace(/\D/g, '');
+
+  return `<div style="font-family: 'Times New Roman', Times, serif; color: #4a4a4a;">
+    <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+        <tr>
+            <td rowspan="4" width="36" style="width: 36px; padding: 0; margin: 0; vertical-align: top;">
+                <img src="https://i.imgur.com/UOT5jB6.png" width="24" height="auto" style="display:block; margin: 0; padding: 0;">
+            </td>
+            <td style="padding: 0; margin: 0;">
+                <div style="font-size: 17px; font-weight: 700; color: #3D5341; line-height: 1.2; margin: 0; padding: 0; white-space: nowrap;">${name}</div>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 0; margin: 0;">
+                <div style="font-size: 14px; color: #808080; line-height: 1.3; margin: 0; padding: 0; white-space: nowrap;">${title}</div>
+            </td>
+        </tr>
+        <tr><td height="10" style="font-size: 0; line-height: 10px; mso-line-height-rule: exactly; border-bottom: 1px solid #c8c8c8;">&nbsp;</td></tr>
+        <tr>
+            <td style="padding: 8px 0 0 0; margin: 0;">
+                <div style="font-size: 13px; color: #808080; line-height: 1.6; margin: 0; padding: 0;">
+                    <a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a><br>
+                    <a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div style="font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #a0a0a0; line-height: 1.4; margin-top: 16px; text-align: justify;">
+        DISCLAIMER: This email and its attachments are intended only for the personal and confidential use of the designated recipient(s) named above. If you are not a designated recipient of this email, you may not rely on, duplicate, or redistribute this email (and any attachments) by any means. If you are not a designated recipient of this email, you must immediately delete it and notify the sender that you have received it in error. This email is for informational purposes only and may not be considered (i) an offer, or solicitation of an offer, to invest in, or to buy or sell, any interests or shares, or to participate in any investment or investment strategy; (ii) actionable corporate or financial advice; or (iii) an official statement of Seventy Badminton Group, Inc. or any of its affiliates. Email transmission cannot be guaranteed to be secure or error-free; therefore, Seventy Badminton Group, Inc. cannot and does not accept any responsibility for any errors or omissions that may be present in this email. We do not make any representations or warranties as to the completeness or accuracy of the information in this email and it should not be relied upon for any purpose. All information is subject to change without notice. Any data presented may be unaudited and based on estimates. Seventy Badminton Group, Inc. and its affiliates reserve the right to intercept, retain, monitor, and review the content of email messages to and from its systems. Any discussion of legal, regulatory, or tax matters contained in this email is not intended to be used, and cannot be used, for the purpose of avoiding any penalties, or for promoting, marketing, or recommending to another party any transaction or matter addressed in this email.
+    </div>
+</div>`;
+}
+
+function getReplySignatureHTML() {
+  const name = document.getElementById('name').value || 'Your Name';
+  const title = document.getElementById('title').value || 'Your Title';
+  const phone = document.getElementById('phone').value || '000.000.0000';
+  const email = document.getElementById('email').value || 'you@seventyhospitality.com';
+  const phoneDigits = phone.replace(/\D/g, '');
+
+  return `<div style="font-family: 'Times New Roman', Times, serif; font-size: 14px; color: #808080; line-height: 1.4;">
+    <span style="font-size: 15px; font-weight: 700; color: #3D5341;">${name}</span><span style="color: #c8c8c8;">&nbsp; &nbsp;</span>${title}<span style="color: #c8c8c8;">&nbsp; &nbsp;</span><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none;">${phone}</a><span style="color: #c8c8c8;">&nbsp; &nbsp;</span><a href="mailto:${email}" style="color: #808080; text-decoration: none;">${email}</a>
+</div>`;
+}
+
+function updatePreview() {
+  document.getElementById('preview').innerHTML = getSignatureHTML();
+  document.getElementById('reply-preview').innerHTML = getReplySignatureHTML();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+async function copySignature() {
+  const html = getSignatureHTML();
+  try {
+    const blob = new Blob([html], { type: 'text/html' });
+    const item = new ClipboardItem({ 'text/html': blob });
+    await navigator.clipboard.write([item]);
+    showToast('Signature copied to clipboard!');
+  } catch (e) {
+    // Fallback: select the preview and copy
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('preview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    showToast('Signature copied to clipboard!');
+  }
+}
+
+function downloadHTML() {
+  const html = getSignatureHTML();
+  const name = document.getElementById('name').value || 'Signature';
+  const safeName = name.replace(/\s+/g, '_');
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Signature_${safeName}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('HTML file downloaded!');
+}
+
+async function copyReplySignature() {
+  const html = getReplySignatureHTML();
+  try {
+    const blob = new Blob([html], { type: 'text/html' });
+    const item = new ClipboardItem({ 'text/html': blob });
+    await navigator.clipboard.write([item]);
+    showToast('Reply signature copied to clipboard!');
+  } catch (e) {
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById('reply-preview'));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    document.execCommand('copy');
+    sel.removeAllRanges();
+    showToast('Reply signature copied to clipboard!');
+  }
+}
+
+function downloadReplyHTML() {
+  const html = getReplySignatureHTML();
+  const name = document.getElementById('name').value || 'Signature';
+  const safeName = name.replace(/\s+/g, '_');
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Reply_Signature_${safeName}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Reply HTML file downloaded!');
+}
+
+// Live preview on every keystroke
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', updatePreview));
+updatePreview();
+</script>
+</body>
+</html>
