@@ -15,8 +15,8 @@
   .preview-panel { flex: 1.2; min-width: 340px; }
   label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 16px; }
   label:first-child { margin-top: 0; }
-  input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; }
-  input:focus { outline: none; border-color: #3D5341; }
+  input, select { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; background: #fff; color: #333; }
+  input:focus, select:focus { outline: none; border-color: #3D5341; }
   .hint { font-size: 12px; color: #aaa; margin-top: 2px; }
   h2 { font-size: 15px; color: #3D5341; margin-bottom: 16px; }
   .preview-box { border: 1px solid #e8e8e8; border-radius: 6px; padding: 20px; background: #fff; min-height: 120px; }
@@ -52,12 +52,18 @@
     <label for="title">Title</label>
     <input type="text" id="title" placeholder="Director of Operations">
 
+    <label for="brand">Brand</label>
+    <select id="brand">
+      <option value="seventy">Seventy Hospitality</option>
+      <option value="luckycat">Lucky Cat Mahjong</option>
+    </select>
+
     <label for="phone">Phone Number</label>
     <input type="tel" id="phone" placeholder="5555555555" maxlength="12">
 
     <label for="email">Email</label>
     <input type="text" id="email" placeholder="jane">
-    <div class="hint">@seventyhospitality.com</div>
+    <div class="hint" id="email-hint">@seventyhospitality.com</div>
 
     <div class="steps">
       <strong>How to set up in Outlook:</strong><br>
@@ -87,6 +93,21 @@
 <div class="toast" id="toast">Signature copied to clipboard!</div>
 
 <script>
+const LUCKY_CAT_LOGO_SRC = './Lucky%20Cat%20Logo.svg';
+
+const BRANDS = {
+  seventy: {
+    domain: 'seventyhospitality.com',
+    logoSrc: 'https://i.imgur.com/UOT5jB6.png',
+    logoAlt: 'Seventy Hospitality'
+  },
+  luckycat: {
+    domain: 'luckycatmahjong.com',
+    logoSrc: LUCKY_CAT_LOGO_SRC,
+    logoAlt: 'Lucky Cat Mahjong'
+  }
+};
+
 function formatPhone(input) {
   const digits = input.replace(/\D/g, '').slice(0, 10);
   if (digits.length <= 3) return digits;
@@ -94,25 +115,39 @@ function formatPhone(input) {
   return digits.slice(0, 3) + '.' + digits.slice(3, 6) + '.' + digits.slice(6);
 }
 
+function getSelectedBrand() {
+  const selectedBrand = document.getElementById('brand').value;
+  return BRANDS[selectedBrand] || BRANDS.seventy;
+}
+
+function getLogoSrc(brand) {
+  try {
+    return new URL(brand.logoSrc, window.location.href).href;
+  } catch (e) {
+    return brand.logoSrc;
+  }
+}
+
 function getFormValues() {
+  const brand = getSelectedBrand();
   const name = document.getElementById('name').value || 'Jane Smith';
   const title = document.getElementById('title').value || 'Director of Operations';
   const phoneRaw = document.getElementById('phone').value;
   const phone = phoneRaw ? formatPhone(phoneRaw) : '555.555.5555';
   const phoneDigits = phone.replace(/\D/g, '');
   const emailPrefix = document.getElementById('email').value || 'jane';
-  const email = emailPrefix + '@seventyhospitality.com';
-  return { name, title, phone, phoneDigits, email };
+  const email = emailPrefix + '@' + brand.domain;
+  return { name, title, phone, phoneDigits, email, brand };
 }
 
 function getSignatureHTML() {
-  const { name, title, phone, phoneDigits, email } = getFormValues();
+  const { name, title, phone, phoneDigits, email, brand } = getFormValues();
 
   return `<div style="font-family: Tenorite, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
             <td rowspan="4" width="36" style="width: 36px; padding: 0; margin: 0; vertical-align: top;">
-                <img src="https://i.imgur.com/UOT5jB6.png" width="24" height="auto" style="display:block; margin: 0; padding: 0;">
+                <img src="${getLogoSrc(brand)}" alt="${brand.logoAlt}" width="24" height="auto" style="display:block; margin: 0; padding: 0;">
             </td>
             <td style="padding: 0; margin: 0;">
                 <div style="font-size: 17px; font-weight: 700; color: #3D5341; line-height: 1.2; margin: 0; padding: 0; white-space: nowrap;"><font face="Tenorite, Arial, sans-serif">${name}</font></div>
@@ -152,6 +187,8 @@ function getReplySignatureHTML() {
 }
 
 function updatePreview() {
+  const brand = getSelectedBrand();
+  document.getElementById('email-hint').textContent = '@' + brand.domain;
   document.getElementById('preview').innerHTML = getSignatureHTML();
   document.getElementById('reply-preview').innerHTML = getReplySignatureHTML();
 }
@@ -214,6 +251,7 @@ document.getElementById('phone').addEventListener('input', function() {
 
 // Live preview on every keystroke
 document.querySelectorAll('input:not(#phone)').forEach(el => el.addEventListener('input', updatePreview));
+document.getElementById('brand').addEventListener('change', updatePreview);
 updatePreview();
 </script>
 </body>
