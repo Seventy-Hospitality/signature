@@ -8,10 +8,12 @@ Open `index.html` in a browser, choose a brand, fill in your details, and copy t
 
 Available brand options:
 
-- **Seventy Hospitality** — uses `@seventyhospitality.com`
-- **Lucky Cat Mahjong** — uses `@luckycatmahjong.com`
+- **Seventy Hospitality** — uses `@seventyhospitality.com`; green name, dotted phone format, and the legal disclaimer
+- **Yumpling** — uses `@yumpling.com`; red (`#C3272E`) name and logo, `(###) ###-####` phone format, an Instagram handle, and no disclaimer
 
 Two signature types are generated:
 
-- **New Message** — full signature with logo, divider, contact info, and disclaimer
+- **New Message** — full signature with logo, divider, and contact info (Seventy also appends the legal disclaimer)
 - **Reply** — compact single-line format for replies and forwards
+
+Brand logos and the Instagram icon are embedded as base64 PNGs (recolored from the source SVGs) so they render in email clients that don't support SVG.
