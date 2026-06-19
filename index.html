@@ -318,10 +318,10 @@
         const title =
           document.getElementById("title").value || brand.defaultTitle;
         const phoneRaw = document.getElementById("phone").value;
-        const phone = formatPhone(phoneRaw || "5555555555", brand.phoneStyle);
+        const phone = phoneRaw ? formatPhone(phoneRaw, brand.phoneStyle) : "";
         const phoneDigits = phone.replace(/\D/g, "");
-        const emailPrefix = document.getElementById("email").value || "jane";
-        const email = emailPrefix + "@" + brand.domain;
+        const emailPrefix = document.getElementById("email").value.trim();
+        const email = emailPrefix ? emailPrefix + "@" + brand.domain : "";
         return { name, title, phone, phoneDigits, email, brand };
       }
 
@@ -348,6 +348,17 @@
     </div>`
           : "";
 
+        const contactLines = [
+          phone
+            ? `<a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a>`
+            : "",
+          email
+            ? `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a>`
+            : "",
+        ]
+          .filter(Boolean)
+          .join("<br>");
+
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
@@ -370,10 +381,7 @@
         </tr>
         <tr>
             <td style="padding: 6px 0 0 0; margin: 0;">
-                <div style="font-size: 13px; color: #808080; line-height: 1.6; margin: 0; padding: 0;">
-                    <a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a><br>
-                    <a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a>
-                </div>
+                <div style="font-size: 13px; color: #808080; line-height: 1.6; margin: 0; padding: 0;">${contactLines}</div>
             </td>
         </tr>
     </table>${disclaimer}
@@ -393,6 +401,20 @@
     <div style="font-size: 14px; color: ${brand.nameColor}; line-height: 1.3; margin: 4px 0 0 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${title}</font></div>`
           : "";
 
+        const emailRow = email
+          ? `
+                    <tr>
+                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a></td>
+                    </tr>`
+          : "";
+
+        const phoneRow = phone
+          ? `
+                    <tr>
+                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a></td>
+                    </tr>`
+          : "";
+
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <div style="font-size: 17px; font-weight: 700; color: ${brand.nameColor}; line-height: 1.2; margin: 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${name}</font></div>${titleBlock}
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0 0 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -401,13 +423,7 @@
                 <img src="${getLogoSrc(brand)}" alt="${brand.logoAlt}" width="${brand.logoWidth}" height="${brand.logoHeight}" style="display: block; margin: 0; padding: 0;">
             </td>
             <td valign="middle" style="padding: 0 0 0 18px; margin: 0; border-left: 1px solid #c8c8c8; vertical-align: middle;">
-                <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-                    <tr>
-                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a></td>
-                    </tr>
-                    <tr>
-                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a></td>
-                    </tr>
+                <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">${emailRow}${phoneRow}
                     <tr>
                         <td style="padding: 0; margin: 0;">
                             <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -435,12 +451,16 @@
         if (title) {
           parts.push(`<span style="white-space: nowrap;">${title}</span>`);
         }
-        parts.push(
-          `<a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a>`,
-        );
-        parts.push(
-          `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>`,
-        );
+        if (phone) {
+          parts.push(
+            `<a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a>`,
+          );
+        }
+        if (email) {
+          parts.push(
+            `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>`,
+          );
+        }
         if (brand.instagram) {
           parts.push(
             `<a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;">@${brand.instagram}</a>`,
