@@ -318,10 +318,10 @@
         const title =
           document.getElementById("title").value || brand.defaultTitle;
         const phoneRaw = document.getElementById("phone").value;
-        const phone = phoneRaw ? formatPhone(phoneRaw, brand.phoneStyle) : "";
+        const phone = formatPhone(phoneRaw || "5555555555", brand.phoneStyle);
         const phoneDigits = phone.replace(/\D/g, "");
-        const emailPrefix = document.getElementById("email").value.trim();
-        const email = emailPrefix ? emailPrefix + "@" + brand.domain : "";
+        const emailPrefix = document.getElementById("email").value || "jane";
+        const email = emailPrefix + "@" + brand.domain;
         return { name, title, phone, phoneDigits, email, brand };
       }
 
@@ -348,17 +348,6 @@
     </div>`
           : "";
 
-        const contactLines = [
-          phone
-            ? `<a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a>`
-            : "",
-          email
-            ? `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a>`
-            : "",
-        ]
-          .filter(Boolean)
-          .join("<br>");
-
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
@@ -381,7 +370,10 @@
         </tr>
         <tr>
             <td style="padding: 6px 0 0 0; margin: 0;">
-                <div style="font-size: 13px; color: #808080; line-height: 1.6; margin: 0; padding: 0;">${contactLines}</div>
+                <div style="font-size: 13px; color: #808080; line-height: 1.6; margin: 0; padding: 0;">
+                    <a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a><br>
+                    <a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a>
+                </div>
             </td>
         </tr>
     </table>${disclaimer}
@@ -401,20 +393,6 @@
     <div style="font-size: 14px; color: ${brand.nameColor}; line-height: 1.3; margin: 4px 0 0 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${title}</font></div>`
           : "";
 
-        const emailRow = email
-          ? `
-                    <tr>
-                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a></td>
-                    </tr>`
-          : "";
-
-        const phoneRow = phone
-          ? `
-                    <tr>
-                        <td style="font-size: 14px; line-height: 20px; color: #808080; padding: 0 0 6px 0; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a></td>
-                    </tr>`
-          : "";
-
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <div style="font-size: 17px; font-weight: 700; color: ${brand.nameColor}; line-height: 1.2; margin: 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${name}</font></div>${titleBlock}
     <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0 0 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -423,18 +401,11 @@
                 <img src="${getLogoSrc(brand)}" alt="${brand.logoAlt}" width="${brand.logoWidth}" height="${brand.logoHeight}" style="display: block; margin: 0; padding: 0;">
             </td>
             <td valign="middle" style="padding: 0 0 0 18px; margin: 0; border-left: 1px solid #c8c8c8; vertical-align: middle;">
-                <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">${emailRow}${phoneRow}
-                    <tr>
-                        <td style="padding: 0; margin: 0;">
-                            <table cellpadding="0" cellspacing="0" border="0" style="margin: 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-                                <tr>
-                                    <td width="14" valign="middle" style="width: 14px; padding: 0 5px 0 0; margin: 0; vertical-align: middle;"><a href="https://www.instagram.com/${brand.instagram}" style="text-decoration: none;"><img src="${brand.instagramIcon}" alt="Instagram" width="14" height="14" style="display: block; margin: 0; padding: 0; border: 0;"></a></td>
-                                    <td valign="middle" style="margin: 0; padding: 0; vertical-align: middle; font-size: 14px; line-height: 14px; color: #808080; font-family: Inter, Arial, Helvetica, sans-serif;"><a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
+                <div style="font-size: 14px; color: #808080; line-height: 1.8; margin: 0; padding: 0;">
+                    <a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a><br>
+                    <a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a><br>
+                    <a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;"><img src="${brand.instagramIcon}" alt="Instagram" width="14" height="14" style="display: inline-block; vertical-align: middle; margin: 0 5px 2px 0; border: 0;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a>
+                </div>
             </td>
         </tr>
     </table>
