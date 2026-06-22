@@ -451,11 +451,18 @@
         if (title) {
           parts.push(`<span style="white-space: nowrap;">${title}</span>`);
         }
-        if (phone) {
-          parts.push(
-            `<a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;">${phone}</a>`,
+        const replyPhones =
+          brand.phones || (phone ? [{ label: "", digits: phoneDigits }] : []);
+        replyPhones.forEach((p) => {
+          const num = formatPhone(p.digits, brand.phoneStyle).replace(
+            / /g,
+            "&nbsp;",
           );
-        }
+          const label = p.label ? p.label + ":&nbsp;" : "";
+          parts.push(
+            `<span style="white-space: nowrap;">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;">${num}</a></span>`,
+          );
+        });
         if (email) {
           parts.push(
             `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>`,
@@ -473,10 +480,30 @@
 
       function updatePreview() {
         const brand = getSelectedBrand();
-        document.getElementById("email-hint").textContent = "@" + brand.domain;
+        document.getElementById("email-hint").textContent =
+          brand.fixedEmail || "@" + brand.domain;
         document.getElementById("preview").innerHTML = getSignatureHTML();
         document.getElementById("reply-preview").innerHTML =
           getReplySignatureHTML();
+      }
+
+      // Disable per-person fields a brand doesn't use (e.g. Yumpling fixes
+      // email + phones and has no title, so only Name is editable there).
+      function applyBrandFieldState() {
+        const brand = getSelectedBrand();
+        const locked = {
+          title: brand.layout === "yumpling",
+          phone: !!brand.phones,
+          email: !!brand.fixedEmail,
+        };
+        ["title", "phone", "email"].forEach((id) => {
+          const el = document.getElementById(id);
+          el.disabled = locked[id];
+          el.style.opacity = locked[id] ? "0.45" : "";
+          el.style.cursor = locked[id] ? "not-allowed" : "";
+          const label = document.querySelector(`label[for="${id}"]`);
+          if (label) label.style.opacity = locked[id] ? "0.45" : "";
+        });
       }
 
       function showToast(msg) {
@@ -545,9 +572,11 @@
             getSelectedBrand().phoneStyle,
           );
         }
+        applyBrandFieldState();
         updatePreview();
       });
 
+      applyBrandFieldState();
       updatePreview();
     </script>
   </body>
