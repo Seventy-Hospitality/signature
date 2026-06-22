@@ -405,7 +405,7 @@
           .join(`<span style="color: #c8c8c8;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`);
 
         const line =
-          "padding: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 20px; mso-line-height-rule: exactly; color: #808080; white-space: nowrap;";
+          "padding: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 4px; color: #808080; white-space: nowrap;";
 
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -445,7 +445,7 @@
         const { name, title, phone, phoneDigits, email, brand } =
           getFormValues();
         const cell =
-          "vertical-align: middle; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 18px; mso-line-height-rule: exactly; color: #808080; white-space: nowrap;";
+          "vertical-align: middle; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 18px; mso-line-height-rule: exactly; mso-text-raise: 4px; color: #808080; white-space: nowrap;";
         const sep = `<td valign="middle" style="${cell} color: #c8c8c8; padding: 0 8px;">|</td>`;
         const cells = [
           `<td valign="middle" style="${cell} font-weight: 700; color: ${brand.nameColor};"><font face="Inter, Arial, sans-serif">${name}</font></td>`,
