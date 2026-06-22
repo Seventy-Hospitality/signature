@@ -444,12 +444,17 @@
       function getReplySignatureHTML() {
         const { name, title, phone, phoneDigits, email, brand } =
           getFormValues();
-        const sep = `<span style="color: #c8c8c8;"> &nbsp;| &nbsp;</span>`;
-        const parts = [
-          `<span style="font-size: 15px; font-weight: 700; color: ${brand.nameColor}; white-space: nowrap;">${name}</span>`,
+        const cell =
+          "vertical-align: middle; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 18px; mso-line-height-rule: exactly; color: #808080; white-space: nowrap;";
+        const sep = `<td valign="middle" style="${cell} color: #c8c8c8; padding: 0 8px;">|</td>`;
+        const cells = [
+          `<td valign="middle" style="${cell} font-weight: 700; color: ${brand.nameColor};"><font face="Inter, Arial, sans-serif">${name}</font></td>`,
         ];
         if (title) {
-          parts.push(`<span style="white-space: nowrap;">${title}</span>`);
+          cells.push(sep);
+          cells.push(
+            `<td valign="middle" style="${cell}"><font face="Inter, Arial, sans-serif">${title}</font></td>`,
+          );
         }
         const replyPhones =
           brand.phones || (phone ? [{ label: "", digits: phoneDigits }] : []);
@@ -459,23 +464,27 @@
             "&nbsp;",
           );
           const label = p.label ? p.label + ":&nbsp;" : "";
-          parts.push(
-            `<span style="white-space: nowrap;">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;">${num}</a></span>`,
+          cells.push(sep);
+          cells.push(
+            `<td valign="middle" style="${cell}">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${num}</font></a></td>`,
           );
         });
         if (email) {
-          parts.push(
-            `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>`,
+          cells.push(sep);
+          cells.push(
+            `<td valign="middle" style="${cell}"><a href="mailto:${email}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${email}</font></a></td>`,
           );
         }
         if (brand.instagram) {
-          parts.push(
-            `<a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="vertical-align: middle; margin: 0 4px 2px 0; border: 0;">${brand.instagram}</a>`,
+          cells.push(sep);
+          cells.push(
+            `<td valign="middle" style="vertical-align: middle; padding: 0 5px 0 0; line-height: 18px; mso-line-height-rule: exactly;"><!--[if mso]>&zwnj;<![endif]--><a href="https://www.instagram.com/${brand.instagram}" style="text-decoration: none;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="display: inline-block; vertical-align: middle; border: 0;"></a></td>`,
+          );
+          cells.push(
+            `<td valign="middle" style="${cell}"><a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a></td>`,
           );
         }
-        return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; color: #808080; line-height: 1.4;">
-    <font face="Inter, Arial, sans-serif">${parts.join(sep)}</font>
-</div>`;
+        return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;"><tr>${cells.join("")}</tr></table>`;
       }
 
       function updatePreview() {
