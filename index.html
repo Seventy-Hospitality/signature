@@ -189,17 +189,17 @@
 
     <div class="container">
       <div class="form-panel">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="Jane Smith" />
-
-        <label for="title">Title</label>
-        <input type="text" id="title" placeholder="Director of Operations" />
-
         <label for="brand">Brand</label>
         <select id="brand">
           <option value="seventy">Seventy Hospitality</option>
           <option value="yumpling">Yumpling</option>
         </select>
+
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Jane Smith" />
+
+        <label for="title">Title</label>
+        <input type="text" id="title" placeholder="Director of Operations" />
 
         <label for="phone">Phone Number</label>
         <input type="tel" id="phone" placeholder="5555555555" maxlength="16" />
@@ -470,7 +470,7 @@
         }
         if (brand.instagram) {
           parts.push(
-            `<a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;">@${brand.instagram}</a>`,
+            `<a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="vertical-align: middle; margin: 0 4px 2px 0; border: 0;">${brand.instagram}</a>`,
           );
         }
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; color: #808080; line-height: 1.4;">
