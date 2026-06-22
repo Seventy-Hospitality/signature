@@ -272,6 +272,11 @@
           phoneStyle: "parens",
           instagram: "yumpling",
           instagramIcon: INSTAGRAM_ICON_SRC,
+          fixedEmail: "hello@yumpling.com",
+          phones: [
+            { label: "LIC", digits: "7187131839" },
+            { label: "Midtown", digits: "6464196400" },
+          ],
           disclaimer: null,
         },
       };
@@ -321,7 +326,7 @@
         const phone = formatPhone(phoneRaw || "5555555555", brand.phoneStyle);
         const phoneDigits = phone.replace(/\D/g, "");
         const emailPrefix = document.getElementById("email").value || "jane";
-        const email = emailPrefix + "@" + brand.domain;
+        const email = brand.fixedEmail || emailPrefix + "@" + brand.domain;
         return { name, title, phone, phoneDigits, email, brand };
       }
 
@@ -388,24 +393,48 @@
         email,
         brand,
       }) {
-        const titleBlock = title
-          ? `
-    <div style="font-size: 14px; color: ${brand.nameColor}; line-height: 1.3; margin: 4px 0 0 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${title}</font></div>`
-          : "";
+        const phones = brand.phones || [{ label: "", digits: phoneDigits }];
+        const phoneLine = phones
+          .map((p) => {
+            const num = formatPhone(p.digits, brand.phoneStyle).replace(
+              / /g,
+              "&nbsp;",
+            );
+            return `${p.label ? p.label + ":&nbsp;" : ""}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${num}</font></a>`;
+          })
+          .join(`<span style="color: #c8c8c8;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`);
+
+        const line =
+          "padding: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 20px; mso-line-height-rule: exactly; color: #808080; white-space: nowrap;";
 
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
-    <div style="font-size: 17px; font-weight: 700; color: ${brand.nameColor}; line-height: 1.2; margin: 0; padding: 0; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${name}</font></div>${titleBlock}
-    <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0 0 0; padding: 0; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
         <tr>
-            <td width="${brand.logoWidth}" valign="middle" style="width: ${brand.logoWidth}px; padding: 0 18px 0 0; margin: 0; vertical-align: middle;">
-                <img src="${getLogoSrc(brand)}" alt="${brand.logoAlt}" width="${brand.logoWidth}" height="${brand.logoHeight}" style="display: block; margin: 0; padding: 0;">
-            </td>
-            <td valign="middle" style="padding: 0 0 0 18px; margin: 0; border-left: 1px solid #c8c8c8; vertical-align: middle;">
-                <div style="font-size: 14px; color: #808080; line-height: 1.8; margin: 0; padding: 0;">
-                    <a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${email}</font></a><br>
-                    <a href="tel:1${phoneDigits}" style="color: #808080; text-decoration: none; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${phone}</font></a><br>
-                    <a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none; white-space: nowrap;"><img src="${brand.instagramIcon}" alt="Instagram" width="14" height="14" style="display: inline-block; vertical-align: middle; margin: 0 5px 2px 0; border: 0;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a>
-                </div>
+            <td style="padding: 0 0 14px 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 17px; font-weight: bold; line-height: 20px; mso-line-height-rule: exactly; color: ${brand.nameColor}; white-space: nowrap;"><font face="Inter, Arial, sans-serif">${name}</font></td>
+        </tr>
+        <tr>
+            <td style="padding: 0;">
+                <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                    <tr>
+                        <td valign="middle" style="padding: 0 12px 0 0; vertical-align: middle;"><!--[if mso]>&zwnj;<![endif]--><img src="${getLogoSrc(brand)}" alt="${brand.logoAlt}" width="${brand.logoWidth}" height="${brand.logoHeight}" style="display: inline-block; vertical-align: middle; border: 0;"></td>
+                        <td valign="middle" style="padding: 0 0 0 12px; border-left: 1px solid #c8c8c8; vertical-align: middle;">
+                            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                <tr><td style="${line}"><a href="mailto:${email}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${email}</font></a></td></tr>
+                                <tr><td style="${line}">${phoneLine}</td></tr>
+                                <tr>
+                                    <td style="padding: 0;">
+                                        <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                            <tr>
+                                                <td valign="middle" style="padding: 0 5px 0 0; vertical-align: middle; line-height: 20px; mso-line-height-rule: exactly;"><!--[if mso]>&zwnj;<![endif]--><a href="https://www.instagram.com/${brand.instagram}" style="text-decoration: none;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="display: inline-block; vertical-align: middle; border: 0;"></a></td>
+                                                <td valign="middle" style="vertical-align: middle; ${line}"><a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
