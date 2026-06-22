@@ -405,7 +405,7 @@
           .join(`<span style="color: #c8c8c8;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`);
 
         const line =
-          "padding: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 4px; color: #808080; white-space: nowrap;";
+          "padding: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 2px; color: #808080; white-space: nowrap;";
 
         return `<div style="font-family: Inter, Arial, Helvetica, sans-serif; color: #4a4a4a;">
     <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
@@ -444,8 +444,42 @@
       function getReplySignatureHTML() {
         const { name, title, phone, phoneDigits, email, brand } =
           getFormValues();
+        const replyPhones =
+          brand.phones || (phone ? [{ label: "", digits: phoneDigits }] : []);
+        const fmt = (p) =>
+          formatPhone(p.digits, brand.phoneStyle).replace(/ /g, "&nbsp;");
+        const ig = brand.instagram;
+        const igUrl = `https://www.instagram.com/${ig}`;
+
+        // Browser / non-Outlook version: inline flow that WRAPS in the preview
+        // and in clients that support inline-image alignment.
+        const inSep = `<span style="color: #c8c8c8;"> &nbsp;|&nbsp; </span>`;
+        const inParts = [
+          `<span style="font-weight: 700; color: ${brand.nameColor}; white-space: nowrap;">${name}</span>`,
+        ];
+        if (title)
+          inParts.push(`<span style="white-space: nowrap;">${title}</span>`);
+        replyPhones.forEach((p) => {
+          const label = p.label ? p.label + ":&nbsp;" : "";
+          inParts.push(
+            `<span style="white-space: nowrap;">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;">${fmt(p)}</a></span>`,
+          );
+        });
+        if (email)
+          inParts.push(
+            `<a href="mailto:${email}" style="color: #808080; text-decoration: none; white-space: nowrap;">${email}</a>`,
+          );
+        if (ig)
+          inParts.push(
+            `<span style="white-space: nowrap;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="vertical-align: middle; margin: 0 4px 2px 0; border: 0;"><a href="${igUrl}" style="color: #808080; text-decoration: none;">${ig}</a></span>`,
+          );
+        const inline = `<div style="font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; color: #808080; line-height: 1.6;"><font face="Inter, Arial, sans-serif">${inParts.join(inSep)}</font></div>`;
+
+        // Outlook (Word) version: single-row table so the icon centers via the
+        // zwnj image-cell + mso-text-raise technique. Tables don't wrap, which
+        // is fine in a real email's width.
         const cell =
-          "vertical-align: middle; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 18px; mso-line-height-rule: exactly; mso-text-raise: 4px; color: #808080; white-space: nowrap;";
+          "vertical-align: middle; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 18px; mso-line-height-rule: exactly; mso-text-raise: 2px; color: #808080; white-space: nowrap;";
         const sep = `<td valign="middle" style="${cell} color: #c8c8c8; padding: 0 8px;">|</td>`;
         const cells = [
           `<td valign="middle" style="${cell} font-weight: 700; color: ${brand.nameColor};"><font face="Inter, Arial, sans-serif">${name}</font></td>`,
@@ -456,17 +490,11 @@
             `<td valign="middle" style="${cell}"><font face="Inter, Arial, sans-serif">${title}</font></td>`,
           );
         }
-        const replyPhones =
-          brand.phones || (phone ? [{ label: "", digits: phoneDigits }] : []);
         replyPhones.forEach((p) => {
-          const num = formatPhone(p.digits, brand.phoneStyle).replace(
-            / /g,
-            "&nbsp;",
-          );
           const label = p.label ? p.label + ":&nbsp;" : "";
           cells.push(sep);
           cells.push(
-            `<td valign="middle" style="${cell}">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${num}</font></a></td>`,
+            `<td valign="middle" style="${cell}">${label}<a href="tel:1${p.digits}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${fmt(p)}</font></a></td>`,
           );
         });
         if (email) {
@@ -475,16 +503,18 @@
             `<td valign="middle" style="${cell}"><a href="mailto:${email}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${email}</font></a></td>`,
           );
         }
-        if (brand.instagram) {
+        if (ig) {
           cells.push(sep);
           cells.push(
-            `<td valign="middle" style="vertical-align: middle; padding: 0 5px 0 0; line-height: 18px; mso-line-height-rule: exactly;"><!--[if mso]>&zwnj;<![endif]--><a href="https://www.instagram.com/${brand.instagram}" style="text-decoration: none;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="display: inline-block; vertical-align: middle; border: 0;"></a></td>`,
+            `<td valign="middle" style="vertical-align: middle; padding: 0 5px 0 0; line-height: 18px; mso-line-height-rule: exactly;">&zwnj;<a href="${igUrl}" style="text-decoration: none;"><img src="${brand.instagramIcon}" alt="Instagram" width="12" height="12" style="display: inline-block; vertical-align: middle; border: 0;"></a></td>`,
           );
           cells.push(
-            `<td valign="middle" style="${cell}"><a href="https://www.instagram.com/${brand.instagram}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${brand.instagram}</font></a></td>`,
+            `<td valign="middle" style="${cell}"><a href="${igUrl}" style="color: #808080; text-decoration: none;"><font face="Inter, Arial, sans-serif">${ig}</font></a></td>`,
           );
         }
-        return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;"><tr>${cells.join("")}</tr></table>`;
+        const table = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;"><tr>${cells.join("")}</tr></table>`;
+
+        return `<!--[if !mso]><!-->${inline}<!--<![endif]--><!--[if mso]>${table}<![endif]-->`;
       }
 
       function updatePreview() {
